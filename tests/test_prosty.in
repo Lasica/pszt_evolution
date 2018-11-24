@@ -1,0 +1,9 @@
+items:
+- !!python/tuple [90, 70]
+- !!python/tuple [70, 40]
+- !!python/tuple [60, 30]
+- !!python/tuple [50, 20]
+- !!python/tuple [10, 10]
+- !!python/tuple [50, 40]
+items_number: 6
+volume: 80
