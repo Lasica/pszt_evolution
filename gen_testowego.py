@@ -1,14 +1,13 @@
-
 import random
 import argparse
 import numpy as np
 import argparse
 
-parser = argparse.ArgumentParser(description = "Generator testów na rzecz projektów z PSZT")
-parser.add_argument('--filename', help ="Ścieżka pliku testowego", type=str, default="testowy.csv")
-parser.add_argument('licz_przedmiotow', help = "Liczba przedmiotów które wygenerujemy")
-parser.add_argument('--srednia', help = "Średnia rozkładu normalnego", type= float,  default = 10, required = False)
-parser.add_argument('--wariancja', help = 'Wariancja rozkładu normalnego', type = float,  default = 2,  required = False)
+parser = argparse.ArgumentParser(description="Generator testów na rzecz projektów z PSZT")
+parser.add_argument('--filename', help="Ścieżka pliku testowego", type=str, default="testowy.csv")
+parser.add_argument('licz_przedmiotow', help="Liczba przedmiotów które wygenerujemy")
+parser.add_argument('--srednia', help="Średnia rozkładu normalnego", type=float, default=10, required=False)
+parser.add_argument('--wariancja', help='Wariancja rozkładu normalnego', type=float, default=2, required=False)
 
 args = parser.parse_args()
 
@@ -17,13 +16,13 @@ N = args.licz_przedmiotow
 mu = args.srednia
 sigma = args.wariancja
 
-items_list =  []
+items_list = []
 
-for x in range(0,int(N)):
-    waga    = int(np.random.normal(mu,sigma,1))
-    wartosc = int(np.random.normal(mu, sigma,1))
+for x in range(0, int(N)):
+    waga    = int(np.random.normal(mu, sigma, 1))
+    wartosc = int(np.random.normal(mu, sigma, 1))
 
-    items_list.append((waga,wartosc))
+    items_list.append((waga, wartosc))
 
 print(items_list)
 
