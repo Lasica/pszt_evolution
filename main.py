@@ -5,7 +5,7 @@ import yaml
 import time
 
 timestr = time.strftime("%Y-%m-%d-%H-%M-%S")
-algorithms = ["brute", "smartbrute", "evolution", "dynamic"]
+algorithms = ["greedy", "smartgreedy", "evolution", "dynamic"]
 
 outfile = "run{}.out".format(timestr)
 
