@@ -1,33 +1,22 @@
-class DynamicSolver:
+from . import VirtualSolver
 
-    def __init__(self, input_dict): #konstruktor
-        self.item_list = input_dict["items"]
-        self.volume = input_dict["volume"]
 
-    def nwd (self, a, b):
+class DynamicSolver(VirtualSolver):  # dziedziczenie interfejsu, rzecz w pythonie zbedna ale porzadkuje kod
 
+    def nwd(self, a, b):
         while b > 0:
             c = a % b
             a = b
             b = c
-
         return a
 
-    def solve(self):
+    def solve(self):  # TODO: sprawdzic czy wejscie jest int, jak nie to rzucic wyjatek "Wrong input"
         current_nwd = self.item_list[0][1]
         for p, w in self.item_list:
             current_nwd = self.nwd(current_nwd, w)
 
-        backpack = [-1] * (self.volume/current_nwd+1)
+        backpack = [-1] * (self.capacity/current_nwd + 1)  # symulowana nieskonczonosc
         backpack[0] = 0
         for p, w in self.item_list:
-            pass# ... algorytm plecakowy uzupelniania plecaka
-        return backpack[self.volume]
-
-
-
-
-
-
-
-        #return
+            pass  # ... algorytm plecakowy uzupelniania plecaka
+        return backpack[self.capacity]
