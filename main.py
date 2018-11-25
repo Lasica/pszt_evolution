@@ -4,7 +4,8 @@ import argparse
 import yaml
 import time
 from solvers.DynamicSolver import DynamicSolver
-#from solvers.GreedySolver import GreedySolver
+from solvers.GreedySolver import GreedySolver
+from solvers.SmartGreedySolver import SmartGreedySolver
 
 
 timestr = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -37,8 +38,7 @@ if __name__ == "__main__":
     if args.algorithm == algorithms[0]:  # greedy
         solver = GreedySolver(test_data)
     elif args.algorithm == algorithms[1]:  # smart greedy
-        #solver = SmartGreedySolver(test_data)
-        pass
+        solver = SmartGreedySolver(test_data)
     elif args.algorithm == algorithms[2]:  # dynamic
         solver = DynamicSolver(test_data)
     elif args.algorithm == algorithms[3]:  # evolution

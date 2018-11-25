@@ -1,27 +1,13 @@
-#open file, read list of items, sort them and put in backpack
-import yaml
+from .VirtualSolver import VirtualSolver
 
-file_path = "tests\\test_prosty.in"
-with open(file_path) as f:
-	yamlcha    = yaml.load(f)
-	item_dict  = yamlcha["items"]
-	max_weight = yamlcha["volume"]
-	item_num   = yamlcha["items_number"] 
 
-item_dict = [(price,weight, i) for i, (weight,price) in enumerate(item_dict)]
-item_dict.sort(reverse=True)
+class GreedySolver(VirtualSolver):  # dziedziczenie interfejsu, rzecz w pythonie zbedna ale porzadkuje kod
 
-print(item_dict)
-current_prize = 0
-current_weight = 0
-plecak = []
-
-for (weight, price, num) in item_dict:
-	print(current_weight, current_prize, price, weight)
-	if (current_weight + weight) <= max_weight:
-		current_prize  += price
-		current_weight += weight
-		plecak.append((price, weight, num))
-
-print(plecak, current_prize, current_weight)
-
+    def solve(self):
+        items = [(i, item[0], item[1]) for i, item in enumerate(self.items)]
+        items.sort(reverse=True, key=lambda x: x[1])
+        taken = 0
+        for i, p, w in items:
+            if taken + w < self.capacity:
+                self.result.append(((p, w), i))
+                taken += w
