@@ -48,6 +48,6 @@ if __name__ == "__main__":
         raise Exception("Unknown algorithm type")  # nie powinno sie wydarzyc, argparse sprawdza skladnie
 
     print("Solving...")
-    solver.solve()
+    solver()
     print("Solved in {} with result {}:".format(solver.get_solving_time(), -solver.check_answer(0)))
     print(solver.result)
