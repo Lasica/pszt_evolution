@@ -7,4 +7,4 @@ items:
 - !!python/tuple [10, 10]
 - !!python/tuple [50, 40]
 items_number: 6
-volume: 80
+capacity: 80

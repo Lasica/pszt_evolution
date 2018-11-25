@@ -12,6 +12,7 @@ parser.add_argument('pojemnosc_plecaka', help="Pojemnosc plecaka", type=int, def
 parser.add_argument('--srednia', help="Srednia rozkladu normalnego", type=float, default=10, required=False)
 parser.add_argument('--wariancja', help='Wariancja rozkladu normalnego', type=float, default=2, required=False)
 parser.add_argument('--nwd', help="Zadana najwieksza wspolna wielokrotnosc wag", type=int, default=1, required=False)
+parser.add_argument('-v', help="Tryb verbose", action="store_true")
 
 args = parser.parse_args()
 
@@ -24,14 +25,15 @@ sigma = args.wariancja
 items_list = []
 nwd = args.nwd
 for x in range(0, int(N)):
-    waga = int(np.random.normal(mu, sigma, 1))
+    waga = max(int(np.random.normal(mu, sigma, 1)), 1)  # FIXME wagi i wartosci powinny moc miec inne rozklady.
     if nwd > 1:
-        waga = min(nwd, int(waga / nwd) * nwd)
+        waga = max(nwd, int(waga / nwd) * nwd)
     wartosc = int(np.random.normal(mu, sigma, 1))
 
     items_list.append((waga, wartosc))
 
-print(items_list)
+if args.v:
+    print(items_list)
 
 with open(file_path, "w") as myfile:
-    yaml.dump({"volume": v, "items_number": N, "items": items_list, "description": "weight/value"}, stream=myfile)
+    yaml.dump({"capacity": v, "items_number": N, "items": items_list, "description": "weight/value"}, stream=myfile)

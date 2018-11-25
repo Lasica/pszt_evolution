@@ -116,3 +116,4 @@ dmypy.json
 
 *.in
 *.csv
+out/*

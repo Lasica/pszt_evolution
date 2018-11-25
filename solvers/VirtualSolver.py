@@ -3,14 +3,13 @@ import time
 
 class VirtualSolver:  # Solver interface to inherit from
     def __init__(self, input_dict, config=None):
-        self.capacity = input_dict['volume']
-        self.items = input_dict['items']  # powinno byc typu numpy.ndarray
+        self.capacity = input_dict['capacity']
+        self.items = input_dict['items'] 
         self.result = None  # pary waga, wartosc, indeks
         self.start_time = 0.0
         self.finish_time = 0.0
         self.configuration = config
 
-    # klasa wirtualna do wzorowania sie interfejsu
     def solve(self):
         # placeholder, funkcja powinna zwracać wynik (wartosc, upakowanie plecaka);
         # dokladne przedmioty uzyte do upakowania powinny byc w self.result
