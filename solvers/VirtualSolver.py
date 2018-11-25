@@ -5,9 +5,12 @@ class VirtualSolver:  # Solver interface to inherit from
     def __init__(self, input_dict, config=None):
         self.capacity = input_dict['capacity']
         self.items = input_dict['items'] 
-        self.result = None  # pary waga, wartosc, indeks
+        self.result = []  # pary waga, wartosc, indeks
         self.start_time = 0.0
         self.finish_time = 0.0
+        self.configuration = config  # slownik
+
+    def set_configuration(self, config):
         self.configuration = config
 
     def solve(self):
@@ -20,6 +23,9 @@ class VirtualSolver:  # Solver interface to inherit from
         result = self.solve()
         self.finish_time = time.process_time()
         return result
+
+    def get_solving_time(self):
+        return self.finish_time - self.start_time
 
     def check_answer(self, answer):
         """Function to compare with optimal answer, should return """
