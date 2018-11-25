@@ -1,4 +1,4 @@
-description: weight/prize
+description: prize/weight
 items:
 - !!python/tuple [90, 70]
 - !!python/tuple [70, 40]

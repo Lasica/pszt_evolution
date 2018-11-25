@@ -34,10 +34,10 @@ for x in range(0, int(N)):
         waga = max(nwd, int(waga / nwd) * nwd)
     wartosc = int(np.random.normal(mu_p, sigma_p, 1))
 
-    items_list.append((waga, wartosc))
+    items_list.append((wartosc, waga))
 
 if args.v:
     print(items_list)
 
 with open(file_path, "w") as myfile:
-    yaml.dump({"capacity": v, "items_number": N, "items": items_list, "description": "weight/value"}, stream=myfile)
+    yaml.dump({"capacity": v, "items_number": N, "items": items_list, "description": "prize/weight"}, stream=myfile)
