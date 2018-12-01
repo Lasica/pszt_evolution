@@ -30,6 +30,21 @@ class test_permutation(unittest.TestCase):
             mutation_counter += count_mutations(mutated)
         self.assertAlmostEqual(expected_mutations/possible_mutations, mutation_counter/possible_mutations, 1)
 
+    def mutate_basic(self):
+        sample_genotype = Genotype(7, "01001100001011")
+        other_genotype = Genotype(7, sample_genotype._mutate([1]*sample_genotype.real_size))
+        self.assertEqual(other_genotype.code, "10110011110100")
+
+    def test_cross_basic(self):
+        sample_genotype = Genotype(8, "11111111111111") #4, 7
+        other_genotype = Genotype(8,  "00000000000000")
+        ###############################012345678901234
+        expected_crossed =           ["00001110000000",
+                                      "11110001111111"]
+        self.assertCountEqual(expected_crossed, sample_genotype._cross([4,7,sample_genotype.real_size], other_genotype))
+        # self.assertCountEqual(expected_crossed, ["00000000000000", "11111111111111"])  # zwraca falsz
+
+
 
 if __name__ == '__main__':
     unittest.main()

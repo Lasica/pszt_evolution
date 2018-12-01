@@ -22,16 +22,32 @@ class Genotype:
                 break
         return total_size
 
-    def cross(self, genotype_other, k_points):  # k_points <= format -1
+    def _cross(self, positions, genotype_other):
+        children = ["", ""]
+        prev_locus = 0
+        gtyp1, gtyp2 = genotype_other.code, self.code
+        for locus in positions:
+            gtyp1, gtyp2 = gtyp2, gtyp1
+            children[0] += gtyp1[prev_locus:locus]
+            children[1] += gtyp2[prev_locus:locus]
+            prev_locus = locus
+        return children
 
-        return None #children
+    def cross(self, genotype_other, k_points):  # k_points <= format -1
+        locuses = np.random.permutation(self.real_size)[:k_points]
+        locuses.sort()
+        locuses += [self.real_size]
+        return self._cross(locuses, genotype_other)
+
+    def _mutate(self, mutations):
+        return ''.join([chr(ord(gen) ^ mutacja) for gen, mutacja in zip(self.code, mutations)])
 
     def mutate(self, chance):
         # wyliczyc pozycje mutacji z rozkladem chance
         # dla kazdego z bitow mutuj wedlug tego rozkladu
         mutations = np.random.random(size = self.real_size)
         mutations = [i < chance for i in mutations]
-        return ''.join([ chr(ord(gen) ^ mutacja) for gen, mutacja in zip(self.code, mutations) ])
+        return self._mutate(mutations)
 
 class PermutationFenotype:
 
