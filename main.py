@@ -1,7 +1,7 @@
 #!/bin/python
 import numpy as np
 import argparse
-import yaml
+import json
 import time
 from solvers.DynamicSolver import DynamicSolver
 from solvers.GreedySolver import GreedySolver
@@ -22,7 +22,7 @@ args = parser.parse_args()
 
 def load(path):
     with open(path, 'r') as file:
-        return yaml.load(file)
+        return json.load(file)
 
 if __name__ == "__main__":
     print("Testing {} with {}, output file {}...".format(args.test, args.algorithm, outfile))

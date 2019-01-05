@@ -3,7 +3,7 @@ import random
 import argparse
 import numpy as np
 import argparse
-import yaml
+import json
 
 parser = argparse.ArgumentParser(description="Generator testow na rzecz projektu z PSZT")
 parser.add_argument('--filename', help="Sciezka pliku testowego", type=str, default="testowy.in")
@@ -40,4 +40,4 @@ if args.v:
     print(items_list)
 
 with open(file_path, "w") as myfile:
-    yaml.dump({"capacity": v, "items_number": N, "items": items_list, "description": "prize/weight"}, stream=myfile)
+    json.dump({"capacity": v, "items_number": N, "items": items_list, "description": "prize/weight"}, myfile, indent=True)
