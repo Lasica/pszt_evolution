@@ -30,7 +30,7 @@ class test_permutation(unittest.TestCase):
             mutation_counter += count_mutations(mutated)
         self.assertAlmostEqual(expected_mutations/possible_mutations, mutation_counter/possible_mutations, 1)
 
-    def mutate_basic(self):
+    def test_mutate_basic(self):
         sample_genotype = Genotype(7, "01001100001011")
         other_genotype = Genotype(7, sample_genotype._mutate([1]*sample_genotype.real_size))
         self.assertEqual(other_genotype.code, "10110011110100")
