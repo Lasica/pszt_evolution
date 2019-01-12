@@ -56,7 +56,7 @@ class PermutationGenotypeTranslator:
         step 4: 4 1 0 2 3   <- bits: "000b, 0" inserting "4" into 0 position
         step 5: 4 1 5 0 2 3 <- bits: "111b, 7" inserting "5" into 7%5=2 position
     """
-    def __init__(self, pool_size, size, cap, items):
+    def __init__(self, size, cap, items):
         self.size = size
         self.genotype_size = PermutationGenotypeTranslator._calculate_genotype_length(size)
         self.capacity = cap
@@ -69,13 +69,15 @@ class PermutationGenotypeTranslator:
         permutation = [0]
         sum_i = 0
         nbit = 1
-        for i in range(1, genotype.size):
+        i = 1
+        while sum_i < genotype.size:
             #print(i, nbit, ' ({} {}) {}'.format(sum_i, sum_i + nbit, f[sum_i:sum_i + nbit]))
             index = int(genotype.code[sum_i:sum_i + nbit], 2) % (i+1)
             permutation.insert(index, i)
             sum_i += nbit
             if i + 1 >= (1 << nbit):
                 nbit += 1
+            i += 1
         return permutation
 
     def evaluate_fenotype(self, permutation): # permutacja - lista liczb
@@ -89,7 +91,7 @@ class PermutationGenotypeTranslator:
                 break
         return value
 
-    def decode_and_evaulate(self, genotype):
+    def decode_and_evaluate(self, genotype):
         return self.evaluate_fenotype(PermutationGenotypeTranslator.decode(genotype))
 
     def get_fenotype(self, permutation):
@@ -209,6 +211,10 @@ class GeneticSolver(VirtualSolver):
         random_seed - ziarno do symulacji - powinno byc ustawione gdy ziarno populacji tez jest ustawione"""
     def __init__(self, data, config=None):
         VirtualSolver.__init__(self, data, config)
+        if config.get('translator', 'permutation') == 'permutation':
+            self.translator = PermutationGenotypeTranslator(len(self.items), self.capacity, self.items)
+        else:
+            raise Exception("Unknown translator configuration {}".format(self.translator))
 
         self.pop_count      = config.get('mi', 20)
         self.breed_count    = config.get('lambda', 10)
@@ -217,18 +223,14 @@ class GeneticSolver(VirtualSolver):
         self.selection      = config.get('selection', 'mi_best') # todo: implement
         self.record         = config.get('record', False)   # todo: implement
         self.max_iterations = config.get('max_iterations', 500)
-        self.translator     = config.get('translator', 'permutation')
         self.pop_random_seed=config.get('pop_random_seed', None)
         self.random_seed    =config.get('random_seed', None)
-        if self.translator == 'permutation':
-            self.translator = PermutationGenotypeTranslator(len(self.items), self.capacity, self.items)
-        else:
-            raise Exception("Unknown translator configuration {}".format(self.translator))
 
 
     def init_genepool(self):
         np.random.seed(self.pop_random_seed)
         self.gene_pool = PopulationPool(self.pop_count, self.translator)
+        self.gene_pool.spawn_random(self.pop_count)
         np.random.seed(self.random_seed)
 
     def solve(self):

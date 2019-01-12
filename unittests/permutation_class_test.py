@@ -5,8 +5,7 @@ import numpy as np
 
 class test_permutation(unittest.TestCase):
     def test_decode(self):
-        pass
-        input = Genotype(7, "01001100001011")
+        input = Genotype(14, "01001100001011")
         expected_result = [1,5,3,6,0,2,4]
         permutation = PermutationGenotypeTranslator.decode(input)
         self.assertListEqual(permutation, expected_result)

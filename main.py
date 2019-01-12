@@ -6,6 +6,7 @@ import time
 from solvers.DynamicSolver import DynamicSolver
 from solvers.GreedySolver import GreedySolver
 from solvers.SmartGreedySolver import SmartGreedySolver
+from solvers.GeneticSolver import GeneticSolver
 
 
 timestr = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -28,8 +29,27 @@ if __name__ == "__main__":
     print("Testing {} with {}, output file {}...".format(args.test, args.algorithm, outfile))
 
     test_data = load(args.test)
-
-    parameters = None
+    """Config:
+            record      - zapisuje co k-ty posredni krok ewolucyjny do narysowania wykresu przebiegu
+            selection   - metoda ruletki, rankingowa, u najlepszych | normalizacja funkcji przystoswania
+            cross_points - liczba punktow w krzyzowaniu od 1 do N-1
+            mutation    - prawdopodobienstwo mutacji pojedynczego genu w genotypie
+                wartosc 0.1 oznacza ze srednio 1 na 10 genotypow bedzie mial 1 mutacje
+            mi          - parametr mi - licznosc populacji
+            lambda      - parametr lambda - licznosc potomstwa
+            translator  - wybiera jaki wariant reprezentacji kodu genetycznego uzyc
+            pop_random_seed - ziarno do losowania populacji
+            random_seed - ziarno do symulacji - powinno byc ustawione gdy ziarno populacji tez jest ustawione"""
+    default_config = {
+        'record': True,
+        'selection': "roulette",
+        'cross_points': 2,
+        'mutation': 0.2,
+        'mi': 20,
+        'lambda': 10,
+        'transaltor': 'permutation',
+    }
+    parameters = default_config
     if args.parameters:
         parameters = load(args.parameters)
 
@@ -42,8 +62,7 @@ if __name__ == "__main__":
     elif args.algorithm == algorithms[2]:  # dynamic
         solver = DynamicSolver(test_data)
     elif args.algorithm == algorithms[3]:  # evolution
-        pass
-        #solver = EvolutionSolver(test_data, parameters)
+        solver = GeneticSolver(test_data, parameters)
     else:
         raise Exception("Unknown algorithm type")  # nie powinno sie wydarzyc, argparse sprawdza skladnie
 
