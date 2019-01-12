@@ -133,18 +133,22 @@ class PopulationPool:
         parents = np.random.choice(self.pool, parent_count, replace=False)
         return parents
 
-    def breed(self, parent_count, breed_count, cross_points, mutation_chance):  # todo
+    def breed(self, parent_count, breed_count, cross_points, mutation_chance):
         # breed - reprodukuje breed_count osobnikow na podstawie rodzicow i dodaje ich do pool (obliczajac wyniki genomow)
         # wola select_parents
-        # parents = self.select_parents(parent_count)
-        # for i in range(0, parent_count):
-        #     genomA = self.pool[parents[i]][1]
-        #     genomB = self.pool[parents[i+1]][1]
-        #
-        #     children = genomA.cross(genomB, cross_points)
-        #     children[1] =1
-        #     ++i
-        pass
+
+        parents = self.select_parents(parent_count)
+        while breed_count:
+            parent_pair = np.random.choice(parents, 2, replace=False)
+
+            genomA = parents[1][1]
+            genomB = parent_pair[2][1]
+
+            children = genomA.cross(genomB, cross_points)
+            children = [child.mutate(mutation_chance) for child in children]
+            children = [(self.translator.decode_and_evaluate(genotype), genotype)for genotype in children]
+            self.pool += children
+
 
     def _calculate_normalised_fitness(self, selection_pressure=1):
         # dla metody ruletki liczy prawdopodobienstwa
@@ -210,27 +214,36 @@ class GeneticSolver(VirtualSolver):
         self.breed_count    = config.get('lambda', 10)
         self.cross_points   = config.get('cross_points', 1)
         self.mutation       = config.get('mutation', 0.1) / self.translator.genotype_size
-        self.selection      = config.get('selection', 'best_fitting') # todo: implement
+        self.selection      = config.get('selection', 'mi_best') # todo: implement
         self.record         = config.get('record', False)   # todo: implement
-
+        self.max_iterations = config.get('max_iterations', 500)
         self.translator     = config.get('translator', 'permutation')
+        self.pop_random_seed=config.get('pop_random_seed', None)
+        self.random_seed    =config.get('random_seed', None)
         if self.translator == 'permutation':
             self.translator = PermutationGenotypeTranslator(len(self.items), self.capacity, self.items)
         else:
             raise Exception("Unknown translator configuration {}".format(self.translator))
 
-        if config.get('pop_random_seed', 0):
-            np.random.seed(config['pop_random_seed'])
-        self.gene_pool      = PopulationPool(self.pop_count, self.translator)
-        if config.get('random_seed', 0):  # to get repeatable results
-            np.random.seed(config['random_seed'])
 
-    def solve(self):  # todo
+    def init_genepool(self):
+        np.random.seed(self.pop_random_seed)
+        self.gene_pool = PopulationPool(self.pop_count, self.translator)
+        np.random.seed(self.random_seed)
+
+    def solve(self):
         # 0: Wygenerowac mi osobnikow do populacji P
-        # 1: Losowanie l elementowa populacje z P - T
-        # 2: Reprodukowanie z T l elemenowa populacje potomna krzyzujac i mutujac
-        # 3: Selekcja mi osobnikow z P+R
+        self.init_genepool()
         # 4: stop jesli warunek stopu - liczba iteracji algorytmu (~500) lub % najlepszego wyniku (~90%?)
+        iterations = 0
+        while iterations < self.max_iterations:
+
+            # 1: Losowanie l elementowa populacje z P - T
+            # 2: Reprodukowanie z T l elemenowa populacje potomna krzyzujac i mutujac
+            self.gene_pool.breed(self.breed_count, self.breed_count,  self.cross_points, self.mutation)
+            # 3: Selekcja mi osobnikow z P+R
+            self.gene_pool.kill(self.breed_count, self.selection)
+            iterations += 1
         self.result = self.translator.decode(self.gene_pool.get_best())
         self.result = self.translator.get_fenotype(self.result)
         return self.result
