@@ -22,6 +22,7 @@ class PopulationPool:
             children = [(self.translator.decode_and_evaluate(genotype), genotype) for genotype in children]
             self.pool += children
             breed_count -= 2
+        return parents, children
 
     def get_best(self):
         # zwraca genom najlepszego osobnika z populacji wzgledem wartosci score - na koniec zeby zdekodowac i miec wynik
@@ -40,7 +41,7 @@ class PopulationPool:
         leftovers = len(self.pool) - kill_count
         self.pool.sort(reverse=True)
         if (selection_method == "ranking"):
-            survivability = np.cumsum(np.arange(start=len(self.pool)), stop=0, step=-1)
+            survivability = np.cumsum(np.arange(stop=0, start=len(self.pool), step=-1))
             survivors = self._randomise_with_weights(leftovers, survivability)
             self.pool = [self.pool[i] for i in survivors]
 
@@ -58,14 +59,18 @@ class PopulationPool:
         temporarypool = [(self.translator.decode_and_evaluate(genome), genome) for genome in temporarypool]
         self.pool += temporarypool
 
-    def _calculate_normalised_fitness(self, selection_pressure=1):
+    def _calculate_normalised_fitness(self, selection_pressure=0.5):
         # dla metody ruletki liczy prawdopodobienstwa
         # liczy srednia i wariancje z wartosci score i zwraca exp(scores) jako fitness - pstwo przezywalnosci
         scores = np.array([gs[0] for gs in self.pool])
         mean = scores.mean()
         stdev = np.sqrt(np.dot(scores, scores) / scores.size - mean ** 2)  # wariancja policzona szybko
-        scores = (scores - mean) * selection_pressure / stdev
-        return np.exp(scores)
+        if stdev:
+            scores = (scores - mean) * selection_pressure / stdev
+            return np.exp(scores)
+        else:
+            return np.ones(scores.shape)
+
 
     def _randomise_with_weights(self, count, survivability):  # count == kill_count albo losujemy kto przezyl;
         prefix_sum = np.cumsum(survivability)

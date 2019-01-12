@@ -27,6 +27,9 @@ class VirtualSolver:  # Solver interface to inherit from
     def get_solving_time(self):
         return self.finish_time - self.start_time
 
+    def get_score(self):
+        return [sum(zp) for zp in zip(*map(lambda x:x[0], self.result))]
+
     def check_answer(self, answer):
         """Function to compare with optimal answer, should return """
         dif = answer - sum([item[0] for item, i in self.result])

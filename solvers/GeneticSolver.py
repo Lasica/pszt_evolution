@@ -2,7 +2,7 @@ from .VirtualSolver import VirtualSolver
 import numpy as np
 from .PopulationPool import PopulationPool
 from .Translators import PermutationGenotypeTranslator
-
+from copy import copy
 
 class GeneticSolver(VirtualSolver):
     """Config:
@@ -33,6 +33,8 @@ class GeneticSolver(VirtualSolver):
         self.max_iterations = config.get('max_iterations', 500)
         self.pop_random_seed = config.get('pop_random_seed', None)
         self.random_seed = config.get('random_seed', None)
+        self.verbose = config.get('verbose', False)
+        self.history = {'pool':[], 'parents':[], 'children':[]}
 
     def init_genepool(self):
         np.random.seed(self.pop_random_seed)
@@ -46,10 +48,17 @@ class GeneticSolver(VirtualSolver):
         # 4: stop jesli warunek stopu - liczba iteracji algorytmu (~500) lub % najlepszego wyniku (~90%?)
         iterations = 0
         while iterations < self.max_iterations:
-            print("Running {} iteration...".format(iterations))
+            if self.verbose:
+                print("Running {} iteration...".format(iterations))
+            if self.record and iterations%self.record == 0:
+                self.history['pool'].append(copy(self.gene_pool.pool))
             # 1: Losowanie l elementowa populacje z P - T
             # 2: Reprodukowanie z T l elemenowa populacje potomna krzyzujac i mutujac
-            self.gene_pool.breed(self.breed_count, self.breed_count, self.cross_points, self.mutation)
+            p, c = self.gene_pool.breed(self.breed_count, self.breed_count, self.cross_points, self.mutation)
+
+            if self.record and iterations%self.record == 0:
+                self.history['children'].append(copy(c))
+                self.history['parents'].append(copy(p))
             # 3: Selekcja mi osobnikow z P+R
             self.gene_pool.kill(self.breed_count, self.selection)
             iterations += 1
