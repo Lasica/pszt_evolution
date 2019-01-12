@@ -10,6 +10,17 @@ class test_permutation(unittest.TestCase):
         permutation = PermutationGenotypeTranslator.decode(input)
         self.assertListEqual(permutation, expected_result)
 
+    def test_genotype_length(self):
+        self.assertEqual(PermutationGenotypeTranslator._calculate_genotype_length(1), 0)
+        # self.assertEqual(PermutationGenotypeTranslator._calculate_genotype_length(2), 1)
+        self.assertEqual(PermutationGenotypeTranslator._calculate_genotype_length(3), 3)
+        self.assertEqual(PermutationGenotypeTranslator._calculate_genotype_length(4), 5)
+        self.assertEqual(PermutationGenotypeTranslator._calculate_genotype_length(5), 8)
+        self.assertEqual(PermutationGenotypeTranslator._calculate_genotype_length(6), 11)
+        self.assertEqual(PermutationGenotypeTranslator._calculate_genotype_length(7), 14)
+        self.assertEqual(PermutationGenotypeTranslator._calculate_genotype_length(8), 17)
+        self.assertEqual(PermutationGenotypeTranslator._calculate_genotype_length(9), 21)
+        self.assertEqual(PermutationGenotypeTranslator._calculate_genotype_length(20), 69)
         # def mutate(self, chance):
         #     # wyliczyc pozycje mutacji z rozkladem chance
         #     # dla kazdego z bitow mutuj wedlug tego rozkladu

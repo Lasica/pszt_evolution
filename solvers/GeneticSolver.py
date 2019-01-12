@@ -40,6 +40,9 @@ class Genotype:
     def __eq__(self, other):
         return self.code == other.code
 
+    def __lt__(self, other): # placeholder dla sortowania - nie ma znaczenia
+        return self.size < other.size
+
     def __str__(self):
         return self.code
 # todo: napisac inne translatory i inne reprezentacje: np. zbiorowy albo inna reprezentacje permutacji (wagowa?)
@@ -109,12 +112,13 @@ class PermutationGenotypeTranslator:
     def _calculate_genotype_length(size):
         """Returns number of bits that permutation encoding requires"""
         total_size = 0
-        s = 1
-        for i in range(20):
-            total_size += i * (size - s)
+        s = 1  # pozycja kodowania n-tego bitu w genie
+        for n_bit in range(20):
+            total_size += (size - s)
             s *= 2
             if s > size:
                 break
+
         return total_size
 
 
@@ -132,30 +136,29 @@ class PopulationPool:
 
     # do napisania funkcje:
     def select_parents(self, parent_count):  # zwyczajowo breed_count == parent_count
-        parents = np.random.choice(self.pool, parent_count, replace=False)
+        parents = np.random.choice(range(len(self.pool)), parent_count, replace=False)
         return parents
 
     def breed(self, parent_count, breed_count, cross_points, mutation_chance):
         # breed - reprodukuje breed_count osobnikow na podstawie rodzicow i dodaje ich do pool (obliczajac wyniki genomow)
         # wola select_parents
 
-        parents = self.select_parents(parent_count)
+        parents = self.select_parents(parent_count)  # indeksy
         while breed_count:
             parent_pair = np.random.choice(parents, 2, replace=False)
-
-            genomA = parents[1][1]
-            genomB = parent_pair[2][1]
+            genomA, genomB = self.pool[parent_pair[0]][1], self.pool[parent_pair[1]][1]
 
             children = genomA.cross(genomB, cross_points)
             children = [child.mutate(mutation_chance) for child in children]
             children = [(self.translator.decode_and_evaluate(genotype), genotype)for genotype in children]
             self.pool += children
+            breed_count -= 2
 
 
     def _calculate_normalised_fitness(self, selection_pressure=1):
         # dla metody ruletki liczy prawdopodobienstwa
         # liczy srednia i wariancje z wartosci score i zwraca exp(scores) jako fitness - pstwo przezywalnosci
-        scores = np.array([gs[1] for gs in self.pool])
+        scores = np.array([gs[0] for gs in self.pool])
         mean = scores.mean()
         stdev = np.sqrt(np.dot(scores,scores)/scores.size - mean**2)  # wariancja policzona szybko
         scores = (scores - mean)*selection_pressure/stdev
@@ -239,7 +242,7 @@ class GeneticSolver(VirtualSolver):
         # 4: stop jesli warunek stopu - liczba iteracji algorytmu (~500) lub % najlepszego wyniku (~90%?)
         iterations = 0
         while iterations < self.max_iterations:
-
+            print("Running {} iteration...".format(iterations))
             # 1: Losowanie l elementowa populacje z P - T
             # 2: Reprodukowanie z T l elemenowa populacje potomna krzyzujac i mutujac
             self.gene_pool.breed(self.breed_count, self.breed_count,  self.cross_points, self.mutation)

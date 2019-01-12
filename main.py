@@ -68,5 +68,5 @@ if __name__ == "__main__":
 
     print("Solving...")
     solver()
-    print("Solved in {} with result {}:".format(solver.get_solving_time(), -solver.check_answer(0)))
+    print("Solved in {} with result:".format(solver.get_solving_time()))
     print(solver.result)
