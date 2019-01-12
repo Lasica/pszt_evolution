@@ -30,4 +30,4 @@ class VirtualSolver:  # Solver interface to inherit from
     def check_answer(self, answer):
         """Function to compare with optimal answer, should return """
         dif = answer - sum([item[0] for item, i in self.result])
-        return dif
+        return dif 

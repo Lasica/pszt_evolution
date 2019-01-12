@@ -1,5 +1,6 @@
 from .VirtualSolver import VirtualSolver
 import numpy as np
+import operator
 
 class Genotype:
     """Generic genotype coding class which can cross and mutate.
@@ -55,7 +56,7 @@ class PermutationGenotypeTranslator:
         step 4: 4 1 0 2 3   <- bits: "000b, 0" inserting "4" into 0 position
         step 5: 4 1 5 0 2 3 <- bits: "111b, 7" inserting "5" into 7%5=2 position
     """
-    def __init__(self, size, cap, items):
+    def __init__(self, pool_size, size, cap, items):
         self.size = size
         self.genotype_size = PermutationGenotypeTranslator._calculate_genotype_length(size)
         self.capacity = cap
@@ -116,8 +117,9 @@ class PermutationGenotypeTranslator:
 
 
 class PopulationPool:
-    def __init__(self, translator):
+    def __init__(self, pool_size, translator):
         self.translator = translator
+        self.pool_size  = pool_size
         self.pool       = [] # pary wartosci (score, genome) (wynik genotypu) na podstawie ktorego obliczane jest fitness
 
     def spawn_random(self, pop_count):
@@ -127,14 +129,21 @@ class PopulationPool:
         self.pool    += temporarypool
 
     # do napisania funkcje:
-    def select_parents(self, parent_count):  # zwyczajowo breed_count == parent_count   # todo
-        # select_parents(breed_count) - losuje i zapamietuje tymczasowa populacje z pool w tab _parents (indeksy)
-        parents = []
+    def select_parents(self, parent_count):  # zwyczajowo breed_count == parent_count
+        parents = np.random.choice(self.pool, parent_count, replace=False)
         return parents
 
     def breed(self, parent_count, breed_count, cross_points, mutation_chance):  # todo
         # breed - reprodukuje breed_count osobnikow na podstawie rodzicow i dodaje ich do pool (obliczajac wyniki genomow)
         # wola select_parents
+        # parents = self.select_parents(parent_count)
+        # for i in range(0, parent_count):
+        #     genomA = self.pool[parents[i]][1]
+        #     genomB = self.pool[parents[i+1]][1]
+        #
+        #     children = genomA.cross(genomB, cross_points)
+        #     children[1] =1
+        #     ++i
         pass
 
     def _calculate_normalised_fitness(self, selection_pressure=1):
@@ -146,23 +155,41 @@ class PopulationPool:
         scores = (scores - mean)*selection_pressure/stdev
         return np.exp(scores)
 
-    def _randomise_with_weights(self, count, weights): # count == kill_count albo losujemy kto przezyl;
+    def _randomise_with_weights(self, count, survivability): # count == kill_count albo losujemy kto przezyl;
+        prefix_sum = np.cumsum(survivability)
+        return [np.searchsorted(prefix_sum, r) for r in
+                     np.random.random(count)*prefix_sum[-1]]
         # funkcja pomocnicza do wyznaczenia
         pass
 
-    def kill(self, kill_count, selection_method='mi_best'):  # todo
-        # liczy pstwa zabicia osobnika na podstawie metody selekcji:
-        # sortowanie pool po score - moze uzyc sortedlist?
-        # ruletka - _calculate_normalised_fitness
-        # rankingowa - liczy pstwa na podstawie rankingu
-        # mi_best - zabija ostatnich kill_count
-        # wolanie randomise_with_weights
-        # zabicie elementow populacji wskazanych przez powyzsze wolanie
-        pass
-
-    def get_best(self):  # todo
+    def get_best(self):
     # zwraca genom najlepszego osobnika z populacji wzgledem wartosci score - na koniec zeby zdekodowac i miec wynik
-        pass
+        self.pool.sort(reverse=True)
+        return self.pool[0][1]
+
+    def kill(self, kill_count, selection_method='mi_best'):
+        """Losowanie ze zwracaniem - zabija kill_count osobnikow z populacji zgodnie z wybrana metoda selekcji:
+            selection_method=
+                'mi_best' - zabija kill_count najgorszych osobnikow
+                'roulette' - rozklad zabitych osobnikow jest zgodny ze znormalizowana funkcja przystosowania exp(fnorm())
+                'ranking' - rozkład zabitych osobników jest zgodny z rankingiem wyników genotypów"""
+        # ruletka - _calculate_normalised_fitness DONE
+        # rankingowa - liczy pstwa na podstawie rankingu
+        # mi_best - zabija ostatnich kill_count DONE
+        leftovers = len(self.pool)-kill_count
+        self.pool.sort(reverse=True)
+        if (selection_method == "ranking"):
+            survivability = np.cumsum(np.arange(start=len(self.pool)), stop=0, step=-1)
+            survivors = self._randomise_with_weights(leftovers, survivability)
+            self.pool = [self.pool[i] for i in survivors]
+
+        elif (selection_method == "roulette"):
+            survivability = self._calculate_normalised_fitness()
+            survivors = self._randomise_with_weights(leftovers, survivability)
+            self.pool = [self.pool[i] for i in survivors]
+
+        elif (selection_method == "mi_best"):
+            self.pool = self.pool[:leftovers]
 
 class GeneticSolver(VirtualSolver):
     """Config:
@@ -178,11 +205,6 @@ class GeneticSolver(VirtualSolver):
         random_seed - ziarno do symulacji - powinno byc ustawione gdy ziarno populacji tez jest ustawione"""
     def __init__(self, data, config=None):
         VirtualSolver.__init__(self, data, config)
-        self.translator     = config.get('translator', 'permutation')
-        if self.translator == 'permutation':
-            self.translator = PermutationGenotypeTranslator(len(self.items), self.capacity, self.items)
-        else:
-            raise Exception("Unknown translator configuration {}".format(self.translator))
 
         self.pop_count      = config.get('mi', 20)
         self.breed_count    = config.get('lambda', 10)
@@ -190,9 +212,16 @@ class GeneticSolver(VirtualSolver):
         self.mutation       = config.get('mutation', 0.1) / self.translator.genotype_size
         self.selection      = config.get('selection', 'best_fitting') # todo: implement
         self.record         = config.get('record', False)   # todo: implement
+
+        self.translator     = config.get('translator', 'permutation')
+        if self.translator == 'permutation':
+            self.translator = PermutationGenotypeTranslator(len(self.items), self.capacity, self.items)
+        else:
+            raise Exception("Unknown translator configuration {}".format(self.translator))
+
         if config.get('pop_random_seed', 0):
             np.random.seed(config['pop_random_seed'])
-        self.gene_pool      = PopulationPool(self.translator)
+        self.gene_pool      = PopulationPool(self.pop_count, self.translator)
         if config.get('random_seed', 0):  # to get repeatable results
             np.random.seed(config['random_seed'])
 
