@@ -1,5 +1,6 @@
 import unittest
-from ..solvers.GeneticSolver import Genotype, PermutationGenotypeTranslator
+from ..solvers.Genotype import Genotype
+from ..solvers.Translators import PermutationGenotypeTranslator
 import numpy as np
 
 
@@ -12,7 +13,7 @@ class test_permutation(unittest.TestCase):
 
     def test_genotype_length(self):
         self.assertEqual(PermutationGenotypeTranslator._calculate_genotype_length(1), 0)
-        # self.assertEqual(PermutationGenotypeTranslator._calculate_genotype_length(2), 1)
+        self.assertEqual(PermutationGenotypeTranslator._calculate_genotype_length(2), 1)
         self.assertEqual(PermutationGenotypeTranslator._calculate_genotype_length(3), 3)
         self.assertEqual(PermutationGenotypeTranslator._calculate_genotype_length(4), 5)
         self.assertEqual(PermutationGenotypeTranslator._calculate_genotype_length(5), 8)
