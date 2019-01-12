@@ -102,7 +102,7 @@ class PermutationGenotypeTranslator:
         taken = []
         for i in permutation:
             if box >= self.items[i][1]:
-                taken.append((self.items[i]), i)
+                taken.append((self.items[i], i))
                 box -= self.items[i][1]
             if box <= 0:
                 break
