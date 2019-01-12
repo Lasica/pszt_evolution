@@ -19,8 +19,8 @@ class test_permutation(unittest.TestCase):
     def test_permutation_evaluation(self):
         permutation = [1,5,3,0,2,4]
         test_data = yaml.load(data)
-        solver = GeneticSolver(test_data)
-        self.assertEqual(solver.evaluate_permutation(permutation), 120)
+        solver = GeneticSolver(test_data, {})
+        self.assertEqual(solver.translator.evaluate_fenotype(permutation), 120)
 
 
 if __name__ == '__main__':
