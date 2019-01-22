@@ -29,7 +29,7 @@ class PopulationPool:
         self.pool.sort(reverse=True)
         return self.pool[0][1]
 
-    def kill(self, kill_count, selection_method='mi_best'):
+    def kill(self, kill_count, selection_method='mi_best', selection_pressure = 0.5):
         """Losowanie ze zwracaniem - zabija kill_count osobnikow z populacji zgodnie z wybrana metoda selekcji:
             selection_method=
                 'mi_best' - zabija kill_count najgorszych osobnikow
@@ -46,7 +46,7 @@ class PopulationPool:
             self.pool = [self.pool[i] for i in survivors]
 
         elif (selection_method == "roulette"):
-            survivability = self._calculate_normalised_fitness()
+            survivability = self._calculate_normalised_fitness(selection_pressure)
             survivors = self._randomise_with_weights(leftovers, survivability)
             self.pool = [self.pool[i] for i in survivors]
 

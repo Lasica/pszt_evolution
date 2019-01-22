@@ -65,15 +65,16 @@ if __name__ == "__main__":
             pop_random_seed - ziarno do losowania populacji
             random_seed - ziarno do symulacji - powinno byc ustawione gdy ziarno populacji tez jest ustawione"""
     default_config = {
-        'record': 1,
-        'selection': "roulette",
-        'cross_points': 2,
-        'mutation': 0.8,
-        'mi': 20,
-        'lambda': 10,
+        'record': 3,
+        'selection': "roulette",#'mi_best',#
+        'cross_points': 15,
+        'mutation': 0.1,
+        'mi': 50,
+        'lambda': 20,
         'transaltor': 'permutation',
-        'max_iterations': 500,
-        'verbose': False,
+        'max_iterations': 100,
+        'verbose': True,#False,
+        'selection_pressure': 0.01,
     }
     if args.parameters:
         parameters = load(args.parameters)
@@ -97,15 +98,19 @@ if __name__ == "__main__":
         figure = plt.figure()
         ax = figure.subplots()
         xdata = [-10, parameters['max_iterations']+1]
-        ydata = [greedy.get_score()[0] for i in range(2)]
-        ax.annotate('greedy', (xdata[1]-2, ydata[1]))
-        ax.add_line(Line2D(xdata, ydata, linewidth=0.5, linestyle='dashed', color='red'))
-        ydata = [sgreedy.get_score()[0] for i in range(2)]
-        ax.annotate('smart', (xdata[1]-2, ydata[1]))
-        ax.add_line(Line2D(xdata, ydata, linewidth=0.5, linestyle='dashed', color='orange'))
-        ydata = [dynamic.get_score()[0] for i in range(2)]
-        ax.annotate('optimal', (xdata[1]-2, ydata[1]))
-        ax.add_line(Line2D(xdata, ydata, linewidth=0.5, linestyle='dashed', color='green'))
+        #ydata = [greedy.get_score()[0] for i in range(2)]
+        #ax.annotate('greedy', (xdata[1]-2, ydata[1]))
+        #ax.add_line(Line2D(xdata, ydata, linewidth=0.5, linestyle='dashed', color='red'))
+        #ydata = [sgreedy.get_score()[0] for i in range(2)]
+        #ax.annotate('smart', (xdata[1]-2, ydata[1]))
+        #ax.add_line(Line2D(xdata, ydata, linewidth=0.5, linestyle='dashed', color='blue'))
+        #ydata = [dynamic.get_score()[0] for i in range(2)]
+        #ax.annotate('optimal', (xdata[1]-2, ydata[1]))
+        #ax.add_line(Line2D(xdata, ydata, linewidth=0.5, linestyle='dashed', color='yellow'))
+
+
+        # ax.annotate('evolution', (xdata[1] - 2, evolution.get_score()[0]))
+
 
         pool_scores = [map(lambda x:x[0], row) for row in evolution.history['pool']]
         child_scores = [map(lambda x:x[0], row) for row in evolution.history['children']]
@@ -115,10 +120,10 @@ if __name__ == "__main__":
         child_count = parameters['lambda']
 
         for ydata in zip(*pool_scores):
-            ax.scatter(xdata, ydata, marker='.', s=2, color='black')
+           ax.scatter(xdata, ydata, marker='.', s=2, color='purple')#na wykresie z odwróconymi kolorami zieleńsze
 
         for ydata in zip(*child_scores):
-            ax.scatter(xdata, ydata, marker='.', s=2, color='green')
+            ax.scatter(xdata, ydata, marker='.', s=2, color='orange')#niebieskie
         ax.set_xlim(left=-5, right=xdata[-1])
         # import pdb; pdb.set_trace()
         plt.show()

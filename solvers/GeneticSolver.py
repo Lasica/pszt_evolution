@@ -34,6 +34,7 @@ class GeneticSolver(VirtualSolver):
         self.pop_random_seed = config.get('pop_random_seed', None)
         self.random_seed = config.get('random_seed', None)
         self.verbose = config.get('verbose', False)
+        self.selection_pressure = config.get('selection_pressure', 0.5)
         self.history = {'pool':[], 'parents':[], 'children':[]}
 
     def init_genepool(self):
@@ -41,6 +42,13 @@ class GeneticSolver(VirtualSolver):
         self.gene_pool = PopulationPool(self.pop_count, self.translator)
         self.gene_pool.spawn_random(self.pop_count)
         np.random.seed(self.random_seed)
+
+    def init_history_scores(self, recorded_pool):
+    #funkcja do podmiany rekordów w historii na możliwe do zaprezentowania na wykresie wartości, czyli po prostu wyniki
+    #najlepsze wyniki - dane zestawy genetypów i ich wartości nadpisujemy najlepszym wynikiem
+        recorded_pool.sort(reverse=True)
+        best_record = recorded_pool[0][1]
+
 
     def solve(self):
         # 0: Wygenerowac mi osobnikow do populacji P
@@ -60,8 +68,10 @@ class GeneticSolver(VirtualSolver):
                 self.history['children'].append(copy(c))
                 self.history['parents'].append(copy(p))
             # 3: Selekcja mi osobnikow z P+R
-            self.gene_pool.kill(self.breed_count, self.selection)
+            self.gene_pool.kill(self.breed_count, self.selection, self.selection_pressure)
             iterations += 1
         self.result = self.translator.decode(self.gene_pool.get_best())
         self.result = self.translator.get_fenotype(self.result)
+        #if self.record:
+       #     self.init_history_scores()
         return self.result
