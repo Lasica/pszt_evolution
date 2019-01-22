@@ -1,7 +1,7 @@
 from .VirtualSolver import VirtualSolver
 import numpy as np
 from .PopulationPool import PopulationPool
-from .Translators import PermutationGenotypeTranslator
+from .Translators import PermutationGenotypeTranslator, ItemsMaskGenotypeTranslator
 from copy import copy
 
 class GeneticSolver(VirtualSolver):
@@ -21,6 +21,8 @@ class GeneticSolver(VirtualSolver):
         VirtualSolver.__init__(self, data, config)
         if config.get('translator', 'permutation') == 'permutation':
             self.translator = PermutationGenotypeTranslator(len(self.items), self.capacity, self.items)
+        elif config.get('translator') == 'items_mask':
+            self.translator = ItemsMaskGenotypeTranslator(len(self.items), self.capacity, self.items)
         else:
             raise Exception("Unknown translator configuration {}".format(self.translator))
 

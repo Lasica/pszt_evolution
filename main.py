@@ -76,8 +76,11 @@ if __name__ == "__main__":
         'lambda': 10,
         'translator': 'permutation',
         'max_iterations': 500,
+<<<<<<< HEAD
         'verbose': True#False,
 
+=======
+>>>>>>> 037feb55e805d0247e1e6b09fc04bfef880f17be
     }
     if args.parameters:
         parameters = load(args.parameters)
@@ -155,7 +158,6 @@ if __name__ == "__main__":
         filename = "symulacja{:03d}.png".format(i)
 
         figure.savefig(filename)
-        #plt.show() # wykomentowane bo zamiast tego zapisuje do pliku
     else:
         solver = create_solver(args.algorithm, test_data, parameters)
         verbose_solving(solver)
