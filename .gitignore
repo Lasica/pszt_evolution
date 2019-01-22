@@ -121,3 +121,4 @@ out/*
 
 symulacja*.png
 .idea*
+default_config.conf

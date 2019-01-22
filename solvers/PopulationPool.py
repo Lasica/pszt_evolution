@@ -41,7 +41,7 @@ class PopulationPool:
         leftovers = len(self.pool) - kill_count
         self.pool.sort(reverse=True)
         if (selection_method == "ranking"):
-            survivability = np.cumsum(np.arange(stop=0, start=len(self.pool), step=-1))
+            survivability = np.arange(stop=0, start=len(self.pool), step=-1)
             survivors = self._randomise_with_weights(leftovers, survivability)
             self.pool = [self.pool[i] for i in survivors]
 
