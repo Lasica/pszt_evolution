@@ -113,7 +113,7 @@ if __name__ == "__main__":
         ax.add_line(Line2D(xdata, ydata, linewidth=0.5, linestyle='dashed', color='red'))
         ydata = [sgreedy.get_score()[0] for i in range(2)]
         ax.annotate('smart', (xdata[1]-2, ydata[1]))
-        ax.add_line(Line2D(xdata, ydata, linewidth=0.5, linestyle='dashed', color='blue'))
+        ax.add_line(Line2D(xdata, ydata, linewidth=0.5, linestyle='dashed', color='orange'))
         ydata = [dynamic.get_score()[0] for i in range(2)]
         ax.annotate('optimal', (xdata[1]-2, ydata[1]))
         ax.add_line(Line2D(xdata, ydata, linewidth=0.5, linestyle='dashed', color='yellow'))
