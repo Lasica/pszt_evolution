@@ -73,3 +73,57 @@ class PermutationGenotypeTranslator:
             if s > size:
                 break
         return total_size
+
+
+class ItemsMaskGenotypeTranslator:
+    """Encodes permutation in the following fashion:
+    The order is the same as in smart greedy order, the number of bits is equal to items and 1 means to take the item
+    if able while 0 means ignore the item.
+    """
+
+    def __init__(self, size, cap, items):
+        self.size = size
+        self.genotype_size = ItemsMaskGenotypeTranslator._calculate_genotype_length(size)
+        self.capacity = cap
+        self.items = items
+        self.sorted_items = items.copy()
+        self.sorted_items = [(it, i) for i, it in enumerate(self.sorted_items)]
+        self.sorted_items.sort(reverse=True, key=lambda x: x[0][0]/x[0][1])
+
+    @staticmethod
+    def decode(genotype):
+        """Decodes genotype and returns fenotype - permutation that dictates order
+        in which items are to be taken in greedy manner"""
+        return genotype.code
+
+    def evaluate_fenotype(self, item_mask):  # permutacja - lista liczb
+        box = self.capacity
+        value = 0
+        for i, m in enumerate(item_mask):
+            if m == "1":
+                if box >= self.sorted_items[i][0][1]:
+                    value += self.sorted_items[i][0][0]
+                    box -= self.sorted_items[i][0][1]
+                if box <= 0:
+                    break
+        return value
+
+    def decode_and_evaluate(self, genotype):
+        return self.evaluate_fenotype(ItemsMaskGenotypeTranslator.decode(genotype))
+
+    def get_fenotype(self, item_mask):
+        box = self.capacity
+        taken = []
+        for i, m in enumerate(item_mask):
+            if m == "1":
+                if box >= self.sorted_items[i][0][1]:
+                    taken.append(self.sorted_items[i])
+                    box -= self.sorted_items[i][0][1]
+                if box <= 0:
+                    break
+        return taken
+
+    @staticmethod
+    def _calculate_genotype_length(size):
+        """Returns number of bits that item_mask encoding requires"""
+        return size

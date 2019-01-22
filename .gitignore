@@ -117,3 +117,5 @@ dmypy.json
 *.in
 *.csv
 out/*
+
+symulacja*.png
