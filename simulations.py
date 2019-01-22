@@ -1,4 +1,4 @@
-import main.py
 import subprocess
+import os
 
-main.py('tests\12test_1000_500.in --algorithm all')
+os.system("python3 main.py --algorithm all --parameters param1.conf tests\\01test_20_100.in ")

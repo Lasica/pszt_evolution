@@ -77,6 +77,7 @@ if __name__ == "__main__":
         'translator': 'items_mask',
         'max_iterations': 500,
         'verbose': True,
+        'selection_pressure': 0.5,
         'interactive': False,
     }
     if args.parameters:
@@ -107,15 +108,15 @@ if __name__ == "__main__":
         figure = plt.figure(figsize=(11,7))
         ax = figure.subplots()
         xdata = [-10, parameters['max_iterations']+1]
-        #ydata = [greedy.get_score()[0] for i in range(2)]
-        #ax.annotate('greedy', (xdata[1]-2, ydata[1]))
-        #ax.add_line(Line2D(xdata, ydata, linewidth=0.5, linestyle='dashed', color='red'))
-        #ydata = [sgreedy.get_score()[0] for i in range(2)]
-        #ax.annotate('smart', (xdata[1]-2, ydata[1]))
-        #ax.add_line(Line2D(xdata, ydata, linewidth=0.5, linestyle='dashed', color='blue'))
-        #ydata = [dynamic.get_score()[0] for i in range(2)]
-        #ax.annotate('optimal', (xdata[1]-2, ydata[1]))
-        #ax.add_line(Line2D(xdata, ydata, linewidth=0.5, linestyle='dashed', color='yellow'))
+        ydata = [greedy.get_score()[0] for i in range(2)]
+        ax.annotate('greedy', (xdata[1]-2, ydata[1]))
+        ax.add_line(Line2D(xdata, ydata, linewidth=0.5, linestyle='dashed', color='red'))
+        ydata = [sgreedy.get_score()[0] for i in range(2)]
+        ax.annotate('smart', (xdata[1]-2, ydata[1]))
+        ax.add_line(Line2D(xdata, ydata, linewidth=0.5, linestyle='dashed', color='blue'))
+        ydata = [dynamic.get_score()[0] for i in range(2)]
+        ax.annotate('optimal', (xdata[1]-2, ydata[1]))
+        ax.add_line(Line2D(xdata, ydata, linewidth=0.5, linestyle='dashed', color='yellow'))
 
 
         # ax.annotate('evolution', (xdata[1] - 2, evolution.get_score()[0]))
@@ -135,13 +136,13 @@ if __name__ == "__main__":
         for ydata in zip(*child_scores):
             ax.scatter(xdata, ydata, marker='.', s=2, color='green')#niebieskie
         ax.set_xlim(left=-5, right=xdata[-1])
-        ax.set_title("μ={}, λ={}, Mut={}, CP={}, selekcja={}, {}, translator={}".format(
+        ax.set_title("μ={}, λ={}, Mut={}, CP={}, selekcja={}, presja selekcyjna = {}, translator={}".format(
                         parameters["mi"],
                         parameters["lambda"],
                         parameters["mutation"],
                         parameters["cross_points"],
                         parameters["selection"],
-                        0.5, # todo: wstawic presje selekcyjna
+                        parameters["selection_pressure"],
                         parameters["translator"],
                         args.test)
                      )
