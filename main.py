@@ -8,6 +8,8 @@ from solvers.SmartGreedySolver import SmartGreedySolver
 from solvers.GeneticSolver import GeneticSolver
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
+import os
+
 
 
 timestr = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -64,27 +66,34 @@ if __name__ == "__main__":
             translator  - wybiera jaki wariant reprezentacji kodu genetycznego uzyc
             pop_random_seed - ziarno do losowania populacji
             random_seed - ziarno do symulacji - powinno byc ustawione gdy ziarno populacji tez jest ustawione"""
+
     default_config = {
-        'record': 3,
-        'selection': "roulette",#'mi_best',#
-        'cross_points': 15,
-        'mutation': 0.1,
-        'mi': 50,
-        'lambda': 20,
-        'transaltor': 'permutation',
-        'max_iterations': 100,
-        'verbose': True,#False,
-        'selection_pressure': 0.01,
+        'record': 1,
+        'selection': "roulette",
+        'cross_points': 2,
+        'mutation': 0.8,
+        'mi': 20,
+        'lambda': 10,
+        'translator': 'permutation',
+        'max_iterations': 500,
+        'verbose': True#False,
+
     }
     if args.parameters:
         parameters = load(args.parameters)
     else:
-        parameters = default_config
+        try:
+            parameters = load("default_parameters.conf")
+        except:
+            print("Missing default config file or invalid, replacing with new one.")
+            with open("default_parameters.conf", "w") as f:
+                json.dump(default_config, f, indent=True)
+            parameters = default_config
 
     if args.algorithm == 'all':
         if parameters['record'] <= 0:
             raise Exception("When comparing all methods record has to be enabled")
-
+        plt.style.use('dark_background')
         greedy      = create_solver('greedy', test_data, parameters)
         sgreedy     = create_solver('smartgreedy', test_data, parameters)
         dynamic     = create_solver('dynamic', test_data, parameters)
@@ -95,7 +104,7 @@ if __name__ == "__main__":
         # import numpy as np
         # np.seterr(all='raise')
         verbose_solving(evolution)
-        figure = plt.figure()
+        figure = plt.figure(figsize=(11,7))
         ax = figure.subplots()
         xdata = [-10, parameters['max_iterations']+1]
         #ydata = [greedy.get_score()[0] for i in range(2)]
@@ -120,10 +129,11 @@ if __name__ == "__main__":
         child_count = parameters['lambda']
 
         for ydata in zip(*pool_scores):
-           ax.scatter(xdata, ydata, marker='.', s=2, color='purple')#na wykresie z odwróconymi kolorami zieleńsze
+           ax.scatter(xdata, ydata, marker='.', s=2, color='orange')
+
 
         for ydata in zip(*child_scores):
-            ax.scatter(xdata, ydata, marker='.', s=2, color='orange')#niebieskie
+            ax.scatter(xdata, ydata, marker='.', s=2, color='green')#niebieskie
         ax.set_xlim(left=-5, right=xdata[-1])
         ax.set_title("μ={}, λ={}, Mut={}, CP={}, selekcja={}, {}, translator={}".format(
                         parameters["mi"],
