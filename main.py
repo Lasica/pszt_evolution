@@ -76,13 +76,8 @@ if __name__ == "__main__":
         'lambda': 10,
         'translator': 'items_mask',
         'max_iterations': 500,
-<<<<<<< HEAD
-        'verbose': True#False,
-
-=======
-        'verbose': False,
+        'verbose': True,
         'interactive': False,
->>>>>>> 037feb55e805d0247e1e6b09fc04bfef880f17be
     }
     if args.parameters:
         parameters = load(args.parameters)
