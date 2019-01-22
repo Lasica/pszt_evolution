@@ -125,8 +125,27 @@ if __name__ == "__main__":
         for ydata in zip(*child_scores):
             ax.scatter(xdata, ydata, marker='.', s=2, color='orange')#niebieskie
         ax.set_xlim(left=-5, right=xdata[-1])
+        ax.set_title("μ={}, λ={}, Mut={}, CP={}, selekcja={}, {}, translator={}".format(
+                        parameters["mi"],
+                        parameters["lambda"],
+                        parameters["mutation"],
+                        parameters["cross_points"],
+                        parameters["selection"],
+                        0.5, # todo: wstawic presje selekcyjna
+                        parameters["translator"],
+                        args.test)
+                     )
         # import pdb; pdb.set_trace()
-        plt.show()
+        ax.set_xlabel("Iteracja algorytmu genetycznego")
+        ax.set_ylabel("Wartość upakowania plecaka")
+        figure.tight_layout()
+        i = 0
+        while os.path.exists("symulacja{:03d}.png".format(i)):
+            i += 1
+        filename = "symulacja{:03d}.png".format(i)
+
+        figure.savefig(filename)
+        #plt.show() # wykomentowane bo zamiast tego zapisuje do pliku
     else:
         solver = create_solver(args.algorithm, test_data, parameters)
         verbose_solving(solver)
