@@ -54,14 +54,14 @@ class PopulationPool:
             survivability = self._calculate_normalised_fitness(selection_pressure)
             surv_sum = sum(survivability)
             survivability /= surv_sum
-            survivors = np.random.choice(len(self.pool), leftovers, replace=False, p=survivability)
+            survivors = np.random.choice(len(survivability), leftovers, replace=False, p=survivability)
             self.pool = [self.pool[i] for i in survivors]
 
         elif (selection_method == "ranking_no_return"):
-            survivability = np.arange(stop=0, start=len(self.pool), step=-1)
+            survivability = np.arange(stop=0, start=len(self.pool), step=-1, dtype=float)
             surv_sum = sum(survivability)
             survivability /= surv_sum
-            survivors = np.random.choice(len(self.pool), leftovers, replace=False, p=survivability)
+            survivors = np.random.choice(len(survivability), leftovers, replace=False, p=survivability)
             self.pool = [self.pool[i] for i in survivors]
 
         elif (selection_method == "mi_best"):
