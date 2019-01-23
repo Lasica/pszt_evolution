@@ -50,8 +50,25 @@ class PopulationPool:
             survivors = self._randomise_with_weights(leftovers, survivability)
             self.pool = [self.pool[i] for i in survivors]
 
+        elif (selection_method == "roulette_no_return"):
+            survivability = self._calculate_normalised_fitness(selection_pressure)
+            surv_sum = sum(survivability)
+            survivability /= surv_sum
+            survivors = np.random.choice(len(self.pool), leftovers, replace=False, p=survivability)
+            self.pool = [self.pool[i] for i in survivors]
+
+        elif (selection_method == "ranking_no_return"):
+            survivability = np.arange(stop=0, start=len(self.pool), step=-1)
+            surv_sum = sum(survivability)
+            survivability /= surv_sum
+            survivors = np.random.choice(len(self.pool), leftovers, replace=False, p=survivability)
+            self.pool = [self.pool[i] for i in survivors]
+
         elif (selection_method == "mi_best"):
             self.pool = self.pool[:leftovers]
+
+        else:
+            raise Exception("Unknown selection method")
 
     def spawn_random(self, pop_count):
         """Spawns pop_count random genomes and adds them to the pool - used for initialisation"""
